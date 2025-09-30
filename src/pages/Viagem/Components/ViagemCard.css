@@ -9,7 +9,7 @@
     background-color: #f2f2fc;
     box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
     transition: 0.3s;
-    max-width: 300px;
+    width: 300px;
     margin: 1rem;
 }
 

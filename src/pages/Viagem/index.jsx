@@ -1,43 +1,43 @@
-import './style.css'
+import { useState, useEffect } from 'react';
+import api from '../../services/api'; 
 import ViagemCard from './Components/ViagemCard';
+import './style.css';
 
 function Viagem() {
-  const viagemAberta = {
-    id: 1,
-    data: "2025-09-30",
-    rota: "Horizonte",
-    carga: 500,
-    veiculoId: 2,
-    finalizada: false
-  };
+  const [viagens, setViagens] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const viagemFinalizada = {
-    id: 2,
-    data: "2025-09-15",
-    rota: "Serra do Felix",
-    carga: 750,
-    veiculoId: 1,
-    finalizada: true,
-    precos: [
-      { quantidade: 740, valor: 4 }
-    ],
-    avariados: [
-      { quantidade: 5, tipo: "Quebrado" },
-      { quantidade: 5, tipo: "Vazado" }
-    ],
-    kms: 180,
-    bonus: 10,
-    retorno: 20,
-    valorFinal: 1220
-  };
+  async function getViagens() {
+    try {
+      const response = await api.get('/viagem');  
+      setViagens(response.data); 
+      setLoading(false);
+    } catch (err) {
+      setError(err.message || 'Erro ao buscar viagens');
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    getViagens();
+  }, []);
+
+  if (loading) return <p>Carregando viagens...</p>;
+  if (error) return <p>Erro: {error}</p>;
 
   return (
-    <div>
-      <h2>Lista de Viagens</h2>
-      <ViagemCard viagem={viagemAberta} />
-      <ViagemCard viagem={viagemFinalizada} />
-    </div>
+    <div className='box'>
+        <div className='viagem-container'>
+          <h2 className='viagem-titulo'>Viagens</h2>
+          <div className="viagem-listagem">
+            {viagens.map((viagem) => (
+              <ViagemCard key={viagem.id} viagem={viagem} />
+            ))}
+          </div>
+        </div>
+      </div>
   );
 }
 
-export default Viagem
+export default Viagem;
