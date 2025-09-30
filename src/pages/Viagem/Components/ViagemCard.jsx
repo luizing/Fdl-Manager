@@ -1,20 +1,20 @@
 import './ViagemCard.css'
 
 function ViagemCard({ viagem }) {
+  
   return (
     <div className="viagem-card">
-      
+
       <div className="cabecalho">
         <p className='viagem-id'>Viagem #{viagem.id}</p>
-        <p>
-          Status:{" "}
+        <p>Status:{" "}
           {viagem.finalizada ? (
             <span className="status finalizada">Finalizada</span>
           ) : (
             <span className="status aberta">Em aberto</span>
           )}
         </p>
-        </div>
+      </div>
 
       <div className="details-container">
         <p className="details"><strong>Data:</strong> {viagem.data}</p>
@@ -49,20 +49,20 @@ function ViagemCard({ viagem }) {
               {viagem.avariados?.map((item, idx) => (
                 <li key={idx}>
                   <span>{item.quantidade}</span>
-        <span>{item.tipo}s</span>
+                  <span>{item.tipo}s</span>
                 </li>
               ))}
             </ul>
           </div>
+
           <div className="details-container">
-            <p className="details"><strong>KMs rodados:</strong> {viagem.kms}</p>
             <p className="details"><strong>Bônus:</strong> {viagem.bonus}</p>
             <p className="details"><strong>Retorno:</strong> {viagem.retorno}</p>
-            <p className="details"><strong>Valor Recebido:</strong> {viagem.valorFinal} </p>
+            <p className="details"><strong>KMs rodados:</strong> {viagem.kms} kms</p>
+            <p className="details"><strong>Valor Recebido:</strong> R$ {viagem.valorFinal.toFixed(2)} </p>
           </div>
         </div>
       )}
-      
     </div>
   )
 }
