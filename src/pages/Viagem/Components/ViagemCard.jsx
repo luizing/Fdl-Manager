@@ -3,50 +3,63 @@ import './ViagemCard.css'
 function ViagemCard({ viagem }) {
   return (
     <div className="viagem-card">
-      <h3 className="viagem-titulo">Viagem #{viagem.id}</h3>
+      
+      <div className="cabecalho">
+        <p className='viagem-id'>Viagem #{viagem.id}</p>
+        <p>
+          Status:{" "}
+          {viagem.finalizada ? (
+            <span className="status finalizada">Finalizada</span>
+          ) : (
+            <span className="status aberta">Em aberto</span>
+          )}
+        </p>
+        </div>
 
-      <p>
-        <strong>Status:</strong>{" "}
-        {viagem.finalizada ? (
-          <span className="status finalizada">Finalizada</span>
-        ) : (
-          <span className="status aberta">Em aberto</span>
-        )}
-      </p>
+      <div className="details-container">
+        <p className="details"><strong>Data:</strong> {viagem.data}</p>
+        <p className="details"><strong>Rota:</strong> {viagem.rota}</p>
+        <p className="details"><strong>Carga:</strong> {viagem.carga}</p>
+        <p className="details"><strong>Veículo:</strong> {viagem.veiculoId}</p>
+      </div>
 
-      <p><strong>Data:</strong> {viagem.data}</p>
-      <p><strong>Rota:</strong> {viagem.rota}</p>
-      <p><strong>Carga:</strong> {viagem.carga}</p>
-      <p><strong>Veículo:</strong> {viagem.veiculoId}</p>
+      {!viagem.finalizada && (
+        <div className="finalizar-viagem">
+          <button className="btn-finalizar">Finalizar</button>
+        </div>
+      )}
 
       {viagem.finalizada && (
-        <div className="detalhes-finalizada">
-          <div>
+        <div>
+          <div className='lista'>
             <strong>Vendas:</strong>
             <ul>
               {viagem.precos?.map((item, idx) => (
                 <li key={idx}>
-                  {item.quantidade} .....  R$ {item.valor.toFixed(2)}
+                 <span>R$ {item.valor.toFixed(2)}</span>
+                 <span>{item.quantidade}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div>
+          <div className='lista'>
             <strong>Avariados:</strong>
             <ul>
               {viagem.avariados?.map((item, idx) => (
                 <li key={idx}>
-                  {item.quantidade} ({item.tipo}s)
+                  <span>{item.quantidade}</span>
+        <span>{item.tipo}s</span>
                 </li>
               ))}
             </ul>
           </div>
-
-          <p><strong>KMs rodados:</strong> {viagem.kms}</p>
-          <p><strong>Bônus:</strong> {viagem.bonus}</p>
-          <p><strong>Retorno:</strong> {viagem.retorno}</p>
-          <p><strong>Valor Recebido:</strong> {viagem.valorFinal} </p>
+          <div className="details-container">
+            <p className="details"><strong>KMs rodados:</strong> {viagem.kms}</p>
+            <p className="details"><strong>Bônus:</strong> {viagem.bonus}</p>
+            <p className="details"><strong>Retorno:</strong> {viagem.retorno}</p>
+            <p className="details"><strong>Valor Recebido:</strong> {viagem.valorFinal} </p>
+          </div>
         </div>
       )}
       
