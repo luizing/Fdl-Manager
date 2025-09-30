@@ -1,7 +1,7 @@
+import { useState } from 'react';
 import './ViagemCard.css'
 
-function ViagemCard({ viagem }) {
-  
+function ViagemCard({ viagem }) {  
   return (
     <div className="viagem-card">
 
@@ -25,7 +25,9 @@ function ViagemCard({ viagem }) {
 
       {!viagem.finalizada && (
         <div className="finalizar-viagem">
-          <button className="btn-finalizar">Finalizar</button>
+          <button className="btn-finalizar">
+            Finalizar
+          </button>
         </div>
       )}
 
@@ -64,7 +66,7 @@ function ViagemCard({ viagem }) {
         </div>
       )}
     </div>
-  )
+)
 }
 
 export default ViagemCard
