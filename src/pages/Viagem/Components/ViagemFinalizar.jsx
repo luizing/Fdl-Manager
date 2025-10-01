@@ -4,11 +4,10 @@ import AvariadosComponent from './AvariadosComponent';
 import DespesasComponent from './DespesasComponent';
 import './ViagemFinalizar.css';
 
-function ViagemFinalizar() {
+function ViagemFinalizar({ viagemId, onViagemFinalizada, onCancelar, loading }) {
     const [km, setKm] = useState('');
     const [bonus, setBonus] = useState('');
     const [retorno, setRetorno] = useState('');
-    const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [vendidos, setVendidos] = useState([]);
     const [avariados, setAvariados] = useState([]);
@@ -28,39 +27,25 @@ function ViagemFinalizar() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
         setMessage('');
 
-        try {
-            // Dados que serão enviados para a API
-            const dadosParaEnviar = {
-                quilometragem: parseFloat(km) || 0,
-                bonus: parseFloat(bonus) || 0,
-                retorno: parseFloat(retorno) || 0,
-                vendidos: vendidos,
-                avariados: avariados,
-                despesas: despesas
-            };
 
-            console.log('Dados para enviar:', dadosParaEnviar);
+        // Prepara os dados para enviar
+        const dadosParaEnviar = {
+            viagemId: viagemId,
+            quilometragem: parseInt(km),
+            bonus: parseInt(bonus) || 0, // ← Agora é inteiro
+            retorno: parseInt(retorno) || 0, // ← Agora é inteiro
+            vendidos: vendidos,
+            avariados: avariados,
+            despesas: despesas
+        };
 
-            // Simulando o envio para a API
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            setMessage('✅ Viagem finalizada com sucesso!');
-            
-            // Limpa todos os campos
-            setKm('');
-            setBonus('');
-            setRetorno('');
-            setVendidos([]);
-            setAvariados([]);
-            setDespesas([]);
+        console.log('Dados completos para enviar:', dadosParaEnviar);
 
-        } catch (error) {
-            setMessage('❌ Erro ao finalizar viagem');
-        } finally {
-            setLoading(false);
+        // Chama a função do pai que fará o POST
+        if (onViagemFinalizada) {
+            await onViagemFinalizada(dadosParaEnviar);
         }
     };
 
@@ -82,7 +67,6 @@ function ViagemFinalizar() {
             <form onSubmit={handleSubmit} className="viagem-form">
                 {/* Campos Principais */}
                 <div className="campos-principais">
-                    {/* Campo de Quilometragem */}
                     <div className="form-group">
                         <label htmlFor="km" className="form-label">
                             Quilômetros Rodados:
@@ -95,16 +79,15 @@ function ViagemFinalizar() {
                             onChange={handleKmChange}
                             placeholder="Quilômetros Rodados"
                             min="0"
-                            step="0.01"
                             required
                             className="form-input"
+                            disabled={loading}
                         />
                     </div>
 
-                    {/* Campo de Bônus */}
                     <div className="form-group">
                         <label htmlFor="bonus" className="form-label">
-                            Bonificação :
+                            Bonificação:
                         </label>
                         <input 
                             type="number"
@@ -116,13 +99,13 @@ function ViagemFinalizar() {
                             min="0"
                             step="1"
                             className="form-input"
+                            disabled={loading}
                         />
                     </div>
 
-                    {/* Campo de Retorno */}
                     <div className="form-group">
                         <label htmlFor="retorno" className="form-label">
-                            Retorno :
+                            Retorno:
                         </label>
                         <input 
                             type="number"
@@ -130,30 +113,37 @@ function ViagemFinalizar() {
                             name="retorno"
                             value={retorno}
                             onChange={handleRetornoChange}
-                            placeholder="Quantidade de retorno"
+                            placeholder="Retorno"
                             min="0"
                             step="1"
                             className="form-input"
+                            disabled={loading}
                         />
                     </div>
                 </div>
 
-                {/* Componente Vendidos */}
                 <VendidosComponent onVendidosChange={handleVendidosChange} />
-
-                {/* Componente Avariados */}
                 <AvariadosComponent onAvariadosChange={handleAvariadosChange} />
-
-                {/* Componente Despesas */}
                 <DespesasComponent onDespesasChange={handleDespesasChange} />
 
-                <button 
-                    type="submit" 
-                    disabled={loading || !km}
-                    className="submit-button"
-                >
-                    {loading ? 'Enviando...' : 'Finalizar Viagem'}
-                </button>
+                <div className="botoes-form">
+                    <button 
+                        type="button"
+                        onClick={onCancelar}
+                        className="btn-cancelar"
+                        disabled={loading}
+                    >
+                        Cancelar
+                    </button>
+                    
+                    <button 
+                        type="submit" 
+                        disabled={loading || !km}
+                        className="submit-button"
+                    >
+                        {loading ? 'Enviando...' : `Finalizar Viagem`}
+                    </button>
+                </div>
 
                 {message && (
                     <div className={`message ${message.includes('✅') ? 'success' : 'error'}`}>

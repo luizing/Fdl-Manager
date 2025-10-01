@@ -28,16 +28,18 @@ function DespesasComponent({ onDespesasChange }) {
     };
 
     // Envia os dados para o componente pai quando houver mudanças
-    useEffect(() => {
-        if (onDespesasChange) {
-            const dadosFormatados = despesas.map(item => ({
+useEffect(() => {
+    if (onDespesasChange) {
+        const dadosFormatados = despesas
+            .map(item => ({
                 finalidade: item.finalidade.trim(),
                 valor: parseFloat(item.valor) || 0
-            })).filter(item => item.finalidade !== '' && item.valor > 0);
-            
-            onDespesasChange(dadosFormatados);
-        }
-    }, [despesas, onDespesasChange]);
+            }))
+            .filter(item => item.finalidade !== '' && item.valor > 0);
+        
+        onDespesasChange(dadosFormatados);
+    }
+}, [despesas]); // ← Só despesas nas dependências
 
     return (
         <div className='atributos-despesas'>

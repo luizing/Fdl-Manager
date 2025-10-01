@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import './VendidosComponent.css';
 
-function VendidosComponent() {
+function VendidosComponent({ onVendidosChange }) { // ← ADICIONE ESTA PROP
     const [vendidos, setVendidos] = useState([
         { quantidade: '', valor: '' }
     ]);
@@ -27,6 +28,18 @@ function VendidosComponent() {
         }
     };
 
+    useEffect(() => {
+        if (onVendidosChange) {
+            const dadosFormatados = vendidos
+                .map(item => ({
+                    quantidade: parseInt(item.quantidade) || 0,
+                    valor: parseFloat(item.valor) || 0
+                }))
+                .filter(item => item.quantidade > 0 && item.valor > 0);
+            
+            onVendidosChange(dadosFormatados);
+        }
+    }, [vendidos]); // ← Só vendidos nas dependências
 
     return (
         <div className='atributos-vendidos'>

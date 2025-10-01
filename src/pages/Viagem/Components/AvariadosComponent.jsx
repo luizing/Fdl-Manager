@@ -6,12 +6,11 @@ function AvariadosComponent({ onAvariadosChange }) {
         { quantidade: '', tipo: '' }
     ]);
 
-    // Opções para o select de tipo
     const opcoesTipo = [
         { value: '', label: 'Selecione o tipo' },
-        { value: 'quebrado', label: 'Quebrados' },
-        { value: 'vazado', label: 'Vazados' },
-        { value: 'vencido', label: 'Vencidos' }
+        { value: 'Quebrado', label: 'Quebrado' },
+        { value: 'Vencido', label: 'Vencido' },
+        { value: 'Vazado', label: 'Vazado' }
     ];
 
     const adicionarLinha = () => {
@@ -35,17 +34,21 @@ function AvariadosComponent({ onAvariadosChange }) {
         }
     };
 
-    // Envia os dados para o componente pai quando houver mudanças
+    // CORREÇÃO: useEffect com dependência correta
     useEffect(() => {
         if (onAvariadosChange) {
-            const dadosFormatados = avariados.map(item => ({
-                quantidade: parseInt(item.quantidade) || 0,
-                tipo: item.tipo
-            })).filter(item => item.quantidade > 0 && item.tipo !== '');
+            const dadosFormatados = avariados
+                .map(item => ({
+                    quantidade: parseInt(item.quantidade) || 0,
+                    tipo: item.tipo
+                }))
+                .filter(item => item.quantidade > 0 && item.tipo !== '');
             
             onAvariadosChange(dadosFormatados);
         }
-    }, [avariados, onAvariadosChange]);
+    }, [avariados]); // ← REMOVA onAvariadosChange das dependências
+
+    // ... resto do código
 
     return (
         <div className='atributos-avariados'>
