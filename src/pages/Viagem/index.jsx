@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api'; 
 import ViagemCard from './Components/ViagemCard';
 import NovaViagem from './Components/NovaViagem';
+import FiltroViagens from './Components/FiltroViagens';
 import './style.css';
 
 function Viagem() {
@@ -10,6 +11,7 @@ function Viagem() {
   const [error, setError] = useState(null);
   const [mostrarNovaViagem, setMostrarNovaViagem] = useState(false);
   const [criandoViagem, setCriandoViagem] = useState(false);
+  const [filtroAtivo, setFiltroAtivo] = useState('hoje'); // hoje, abertas, todas
 
   // Função para obter a data de hoje no formato YYYY-MM-DD
   const getDataHoje = () => {
@@ -17,14 +19,28 @@ function Viagem() {
     return hoje.toISOString().split('T')[0];
   };
 
-  const getDataHojeBr = () => 
-    {return new Date().toLocaleDateString('pt-BR');}
-
   async function getViagens() {
+    setLoading(true);
     try {
-      const dataHoje = getDataHoje();
-      // Faz o GET com a data de hoje como parâmetro
-      const response = await api.get(`/viagem/data/${dataHoje}`);  
+      let url = '';
+      
+      // Constrói a URL baseada no filtro ativo
+      switch(filtroAtivo) {
+        case 'hoje':
+          url = `/viagem/data/${getDataHoje()}`; // viagem/data/hoje
+          break;
+        case 'abertas':
+          url = '/viagem/abertas'; // viagem/abertas
+          break;
+        case 'todas':
+          url = '/viagem'; // viagem/
+          break;
+        default:
+          url = `/viagem/${getDataHoje()}`;
+      }
+
+      console.log('Buscando viagens com URL:', url);
+      const response = await api.get(url);  
       setViagens(response.data); 
       setLoading(false);
     } catch (err) {
@@ -32,6 +48,11 @@ function Viagem() {
       setLoading(false);
     }
   }
+
+  const handleFiltroChange = (novoFiltro) => {
+    // Atualiza o estado diretamente - não precisa de estado interno no FiltroViagens
+    setFiltroAtivo(novoFiltro);
+  };
 
   const handleAbrirNovaViagem = () => {
     setMostrarNovaViagem(true);
@@ -43,16 +64,12 @@ function Viagem() {
 
   const handleNovaViagem = async (dadosViagem) => {
     setCriandoViagem(true);
-    
     try {
-      console.log('Criando nova viagem:', dadosViagem);
       const response = await api.post('/viagem', dadosViagem);
-      console.log('Resposta da API:', response.data);
       setMostrarNovaViagem(false);
       alert('Viagem criada com sucesso!');
-      await getViagens(); // Recarrega as viagens de hoje
+      await getViagens(); // Recarrega com o filtro atual
     } catch (error) {
-      console.error('Erro ao criar viagem:', error);
       alert('Erro ao criar viagem: ' + (error.response?.data?.message || error.message));
     } finally {
       setCriandoViagem(false);
@@ -61,22 +78,35 @@ function Viagem() {
 
   useEffect(() => {
     getViagens();
-  }, []);
+  }, [filtroAtivo]); // Recarrega quando o filtro muda
 
-  if (loading) return <p>Carregando viagens de hoje...</p>;
+  if (loading) return <p>Carregando viagens...</p>;
   if (error) return <p>Erro: {error}</p>;
 
   return (
     <div className='box'>
       <div className='viagem-container'>
         <div className="viagem-header">
-          <h2 className='viagem-titulo'>Viagens de Hoje ({getDataHojeBr()})</h2>
+          <h2 className='viagem-titulo'>Viagens</h2>
         </div>
+
+        {/* Componente de Filtros - Agora totalmente controlado */}
+        <FiltroViagens 
+          onFiltroChange={handleFiltroChange}
+          loading={loading}
+          filtroAtivo={filtroAtivo} // Passa o estado atual como prop
+        />
         
         <div className="viagem-listagem">
-          {viagens.map((viagem) => (
-            <ViagemCard key={viagem.id} viagem={viagem} />
-          ))}
+          {viagens.length === 0 ? (
+            <div className="sem-viagens">
+              <p>Nenhuma viagem encontrada.</p>
+            </div>
+          ) : (
+            viagens.map((viagem) => (
+              <ViagemCard key={viagem.id} viagem={viagem} />
+            ))
+          )}
         </div>
       </div>
 

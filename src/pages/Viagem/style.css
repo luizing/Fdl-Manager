@@ -161,3 +161,13 @@
     display: none;
   }
 }
+
+.sem-viagens {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 16px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 2px dashed #ddd;
+}
