@@ -1,0 +1,71 @@
+.filtro-viagens {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.filtro-viagens h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.botoes-filtro {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-filtro {
+    padding: 12px 20px;
+    background-color: #fff;
+    color: #555;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s;
+    flex: 1;
+    min-width: 120px;
+}
+
+.btn-filtro:hover:not(:disabled) {
+    border-color: #4a90e2;
+    color: #4a90e2;
+    transform: translateY(-1px);
+}
+
+.btn-filtro.ativo {
+    background-color: #4a90e2;
+    color: white;
+    border-color: #4a90e2;
+}
+
+.btn-filtro:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.filtro-info {
+    margin-top: 15px;
+    padding: 12px;
+    background-color: #e7f3ff;
+    border-radius: 6px;
+    border-left: 4px solid #4a90e2;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .botoes-filtro {
+        flex-direction: column;
+    }
+    
+    .btn-filtro {
+        min-width: auto;
+    }
+}
