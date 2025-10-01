@@ -2,6 +2,7 @@ import { useState } from 'react';
 import ViagemFinalizar from './ViagemFinalizar';
 import api from '../../../services/api';
 import './ViagemCard.css'
+import { getNomeVeiculo } from '../../../data/veiculos';
 
 function ViagemCard({ viagem }) {  
   const [mostrarFinalizar, setMostrarFinalizar] = useState(false);
@@ -68,7 +69,7 @@ function ViagemCard({ viagem }) {
           <p className="details"><strong>Data:</strong> {viagem.data}</p>
           <p className="details"><strong>Rota:</strong> {viagem.rota}</p>
           <p className="details"><strong>Carga:</strong> {viagem.carga}</p>
-          <p className="details"><strong>Veículo:</strong> {viagem.veiculoId}</p>
+          <p className="details"><strong>Veículo:</strong> {getNomeVeiculo(viagem.veiculoId)}</p>
         </div>
 
         {!viagem.finalizada && (

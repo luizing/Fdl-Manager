@@ -11,9 +11,20 @@ function Viagem() {
   const [mostrarNovaViagem, setMostrarNovaViagem] = useState(false);
   const [criandoViagem, setCriandoViagem] = useState(false);
 
+  // Função para obter a data de hoje no formato YYYY-MM-DD
+  const getDataHoje = () => {
+    const hoje = new Date();
+    return hoje.toISOString().split('T')[0];
+  };
+
+  const getDataHojeBr = () => 
+    {return new Date().toLocaleDateString('pt-BR');}
+
   async function getViagens() {
     try {
-      const response = await api.get('/viagem');  
+      const dataHoje = getDataHoje();
+      // Faz o GET com a data de hoje como parâmetro
+      const response = await api.get(`/viagem/data/${dataHoje}`);  
       setViagens(response.data); 
       setLoading(false);
     } catch (err) {
@@ -39,7 +50,7 @@ function Viagem() {
       console.log('Resposta da API:', response.data);
       setMostrarNovaViagem(false);
       alert('Viagem criada com sucesso!');
-      await getViagens();
+      await getViagens(); // Recarrega as viagens de hoje
     } catch (error) {
       console.error('Erro ao criar viagem:', error);
       alert('Erro ao criar viagem: ' + (error.response?.data?.message || error.message));
@@ -52,15 +63,14 @@ function Viagem() {
     getViagens();
   }, []);
 
-  if (loading) return <p>Carregando viagens...</p>;
+  if (loading) return <p>Carregando viagens de hoje...</p>;
   if (error) return <p>Erro: {error}</p>;
 
   return (
     <div className='box'>
       <div className='viagem-container'>
         <div className="viagem-header">
-          <h2 className='viagem-titulo'>Viagens</h2>
-          {/* Removemos o botão antigo do header */}
+          <h2 className='viagem-titulo'>Viagens de Hoje ({getDataHojeBr()})</h2>
         </div>
         
         <div className="viagem-listagem">
