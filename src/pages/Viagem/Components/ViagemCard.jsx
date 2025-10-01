@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import ViagemFinalizar from './ViagemFinalizar';
-import api from '../../../services/api';
+import RelatorioViagem from './RelatorioViagem';
+import {getNomeVeiculo} from '../../../data/veiculos'
 import './ViagemCard.css'
-import { getNomeVeiculo } from '../../../data/veiculos';
 
 function ViagemCard({ viagem }) {  
   const [mostrarFinalizar, setMostrarFinalizar] = useState(false);
-  const [loading, setLoading] = useState(false); // ← ADICIONE ESTA LINHA
+  const [mostrarRelatorio, setMostrarRelatorio] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleFinalizarClick = () => {
     setMostrarFinalizar(true);
@@ -17,38 +18,17 @@ function ViagemCard({ viagem }) {
   };
 
   const handleViagemFinalizada = async (dadosViagem) => {
-    setLoading(true); // ← AGORA setLoading ESTÁ DEFINIDO
-    
-    try {
-        console.log('Enviando dados da viagem:', dadosViagem);
+    setLoading(true);
+    // ... seu código existente
+  };
 
-        // Usando AXIOS
-        const response = await api.patch(`/viagem/${dadosViagem.viagemId}`, {
-            kms: dadosViagem.quilometragem,
-            bonus: dadosViagem.bonus,
-            retorno: dadosViagem.retorno,
-            precos: dadosViagem.vendidos,
-            avariados: dadosViagem.avariados,
-            despesas: dadosViagem.despesas,
-            finalizada: true
-        });
+  const handleGerarRelatorio = () => {
+    console.log('Abrindo relatório para viagem:', viagem.id);
+    setMostrarRelatorio(true);
+  };
 
-        console.log('Resposta da API:', response.data);
-        
-        // Fecha o modal após sucesso
-        setMostrarFinalizar(false);
-        
-        alert(`Viagem #${dadosViagem.viagemId} finalizada com sucesso!`);
-        
-        // Opcional: recarregar a página para atualizar a lista
-        window.location.reload();
-
-    } catch (error) {
-      console.error('Erro ao finalizar viagem:', error);
-      alert('Erro ao finalizar viagem: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
+  const handleFecharRelatorio = () => {
+    setMostrarRelatorio(false);
   };
 
   return (
@@ -77,8 +57,9 @@ function ViagemCard({ viagem }) {
             <button 
               className="btn-finalizar"
               onClick={handleFinalizarClick}
+              disabled={loading}
             >
-              Finalizar
+              {loading ? 'Finalizando...' : 'Finalizar'}
             </button>
           </div>
         )}
@@ -90,7 +71,7 @@ function ViagemCard({ viagem }) {
               <ul>
                 {viagem.precos?.map((item, idx) => (
                   <li key={idx}>
-                    <span>R$ {item.valor.toFixed(2)}</span>
+                    <span>R$ {item.valor?.toFixed(2)}</span>
                     <span>{item.quantidade}</span>
                   </li>
                 ))}
@@ -109,23 +90,21 @@ function ViagemCard({ viagem }) {
               </ul>
             </div>
 
-            <div className='lista'>
-              <strong>Despesas:</strong>
-              <ul>
-                {viagem.despesas?.map((item, idx) => (
-                  <li key={idx}>
-                    <span>{item.finalidade}</span>
-                    <span>{item.valor}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="details-container">
+              <p className="details"><strong>Bônus:</strong> {viagem.bonus || 0}</p>
+              <p className="details"><strong>Retorno:</strong> {viagem.retorno || 0}</p>
+              <p className="details"><strong>KMs rodados:</strong> {viagem.kms || 0} kms</p>
+              <p className="details"><strong>Valor Recebido:</strong> R$ {(viagem.valorFinal || 0).toFixed(2)}</p>
             </div>
 
-            <div className="details-container">
-              <p className="details"><strong>Bônus:</strong> {viagem.bonus}</p>
-              <p className="details"><strong>Retorno:</strong> {viagem.retorno}</p>
-              <p className="details"><strong>KMs rodados:</strong> {viagem.kms} kms</p>
-              <p className="details"><strong>Valor Recebido:</strong> R$ {viagem.valorFinal ? viagem.valorFinal.toFixed(2) : '0.00'} </p>
+            {/* BOTÃO GERAR RELATÓRIO - ADICIONADO AQUI */}
+            <div className="relatorio-actions">
+              <button 
+                className="btn-relatorio"
+                onClick={handleGerarRelatorio}
+              >
+                Gerar Relatório
+              </button>
             </div>
           </div>
         )}
@@ -140,6 +119,7 @@ function ViagemCard({ viagem }) {
               <button 
                 className="btn-fechar"
                 onClick={handleFecharFinalizar}
+                disabled={loading}
               >
                 ✕
               </button>
@@ -148,12 +128,21 @@ function ViagemCard({ viagem }) {
               viagemId={viagem.id}
               onViagemFinalizada={handleViagemFinalizada}
               onCancelar={handleFecharFinalizar}
+              loading={loading}
             />
           </div>
         </div>
+      )}
+
+      {/* Modal para relatório */}
+      {mostrarRelatorio && (
+        <RelatorioViagem 
+          viagem={viagem}
+          onFechar={handleFecharRelatorio}
+        />
       )}
     </>
   )
 }
 
-export default ViagemCard
+export default ViagemCard;
