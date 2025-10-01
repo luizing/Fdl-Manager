@@ -2,6 +2,7 @@ import { useState } from 'react';
 import ViagemFinalizar from './ViagemFinalizar';
 import RelatorioViagem from './RelatorioViagem';
 import {getNomeVeiculo} from '../../../data/veiculos'
+import api from '../../../services/api'; 
 import './ViagemCard.css'
 
 function ViagemCard({ viagem }) {  
@@ -17,10 +18,40 @@ function ViagemCard({ viagem }) {
     setMostrarFinalizar(false);
   };
 
-  const handleViagemFinalizada = async (dadosViagem) => {
+const handleViagemFinalizada = async (dadosViagem) => {
     setLoading(true);
-    // ... seu código existente
-  };
+    
+    try {
+        console.log('📍 FINALIZANDO VIAGEM:', dadosViagem);
+
+        // Faz o PATCH para a API
+        const response = await api.patch(`/viagem/${dadosViagem.viagemId}`, {
+            kms: dadosViagem.quilometragem,
+            bonus: dadosViagem.bonus,
+            retorno: dadosViagem.retorno,
+            precos: dadosViagem.vendidos,
+            avariados: dadosViagem.avariados,
+            despesas: dadosViagem.despesas,
+            finalizada: true
+        });
+
+        console.log('✅ VIAGEM FINALIZADA COM SUCESSO:', response.data);
+        
+        // Fecha o modal após sucesso
+        setMostrarFinalizar(false);
+        
+        alert(`✅ Viagem #${dadosViagem.viagemId} finalizada com sucesso!`);
+        
+        // Recarrega a página para atualizar a lista
+        window.location.reload();
+
+    } catch (error) {
+        console.error('❌ ERRO AO FINALIZAR VIAGEM:', error);
+        alert('❌ Erro ao finalizar viagem: ' + (error.response?.data?.message || error.message));
+    } finally {
+        setLoading(false);
+    }
+};
 
   const handleGerarRelatorio = () => {
     console.log('Abrindo relatório para viagem:', viagem.id);
